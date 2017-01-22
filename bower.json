@@ -1,0 +1,18 @@
+{
+  "name": "demo",
+  "description": "An HTML/JS/CSS app",
+  "main": "",
+  "authors": [
+    "John Doe"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
