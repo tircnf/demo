@@ -72,15 +72,13 @@ module.exports = function(lineman) {
             // the source dest will always start with bower_components/ because of the options.
             // same with destination... will be put under vendor
             files: {
-                "js/angular.js": "angular/angular.js"
+                "js/angular.js": "angular/angular.js",
+                "js/angular-route.js": "angular-route/angular-route.js"
             }
         }
 
 
       }
-
-
-
 
   };
 };

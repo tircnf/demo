@@ -2,6 +2,7 @@
 <html>
   <head>
     <title><%= pkg.name %></title>
+    <base href="index.html">
 
     <link rel="stylesheet" type="text/css" href="<%= css %>" media="all" />
   </head>
@@ -10,12 +11,47 @@
 
       <div ng-app="app" ng-controller="ctrl" ng-cloak>
           <br>
-          {{scopedata}} and how..
+          {{scopedata}} 
           </br>
 
           <mike>
             this will disappear.  the 'mike' element doesn't have a transclude
           </mike>
+
+          Choose:
+
+
+          <!-- lots of issues here, depending on whether or not you are using html5 mode..
+          <sigh>
+                if you have html5 mode enabled... then the # will not who up in the url (you get some push state crap).
+                so imagine old school would have looked like  http://site:8080/#Book/something
+                in html 5 land you have                       http://site:8080/Book/something
+
+                if the users refreshes the page, the server looks for Book unless you have some rewriting rules turned on. :(
+
+                so to make it work for everyone, you can disable html5 and put the bang back.
+                angular 1.6 changes # to #!... and that seem to also break in weird ways.
+
+                so to make things work, I had to turn off html, and change the rewrite prefix to '' (from '!').
+
+                plus... add the # to every URL.
+
+          -->
+          <a href="#">nothing..</a>
+          <a href="#Book/Moby">Moby</a>
+          <a href="#Book/Moby/ch/1">Moby: CH1</a>
+          <a href="#Slow">Long running job</a>
+
+          <div ng-view></div>
+
+
+  <pre>$location.path() = {{$location.path()}}</pre>
+  <pre>$route.current.templateUrl = {{$route.current.templateUrl}}</pre>
+  <pre>$route.current.template = {{$route.current.template}}</pre>
+  <pre>$route.current.params = {{$route.current.params}}</pre>
+  <pre>$route.current.scope.name = {{$route.current.scope.name}}</pre>
+  <pre>$routeParams = {{$routeParams}}</pre>
+
       </div>
     <script type="text/javascript" src="<%= js %>"></script>
   </body>
