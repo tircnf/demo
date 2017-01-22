@@ -65,7 +65,7 @@ app.config(function($routeProvider, $locationProvider) {
                 // I will cause a 1 second delay
                 slowValue: function($q, $timeout) {
                     var delay = $q.defer();
-                    $timeout(function() {console.log("calling resolve..");delay.resolve("3.14159")}, 3000);
+                    $timeout(function() {console.log("calling resolve..");delay.resolve("3.14159");}, 3000);
                     return delay.promise;
                 },
                 fastValue: function() {return "-1";}

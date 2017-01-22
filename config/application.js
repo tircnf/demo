@@ -61,6 +61,10 @@ module.exports = function(lineman) {
         common: lineman.config.application.prependTasks.common.concat("bowercopy")
       },
 
+      removeTasks: {
+            common: lineman.config.application.removeTasks.common.concat("coffee")
+      },
+
 
       bowercopy: {
         options: {
