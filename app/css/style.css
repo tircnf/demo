@@ -2,3 +2,10 @@
   background-color: #efefef;
   border: 1px solid #dedede;
 }
+
+
+/*  hide angular stuff while loading.  prevents flicker */
+
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important;
+}
