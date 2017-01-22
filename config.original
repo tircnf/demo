@@ -1,0 +1,496 @@
+{
+  "pkg": {
+    "name": "demo",
+    "description": "An HTML/JS/CSS app",
+    "version": "0.0.1",
+    "private": true,
+    "author": {
+      "name": "John Doe"
+    },
+    "devDependencies": {
+      "lineman": "~0.37.0"
+    },
+    "scripts": {
+      "start": "lineman run",
+      "test": "lineman spec-ci",
+      "production": "lineman clean build && npm i express@3 && node -e \"var e = require('express'), a = e(); a.use(e.static('dist/')); a.listen(process.env.PORT)\""
+    },
+    "readme": "ERROR: No README data found!",
+    "_id": "demo@0.0.1"
+  },
+  "meta": {
+    "banner": "/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - <%= grunt.template.today(\"yyyy-mm-dd\") %> */\n"
+  },
+  "appTasks": {
+    "common": [
+      "coffee",
+      "jshint",
+      "handlebars",
+      "jst",
+      "concat_sourcemap",
+      "copy:dev",
+      "images:dev",
+      "webfonts:dev",
+      "pages:dev"
+    ],
+    "dev": [
+      "server",
+      "watch"
+    ],
+    "dist": [
+      "uglify",
+      "cssmin",
+      "copy:dist",
+      "images:dist",
+      "webfonts:dist",
+      "pages:dist"
+    ]
+  },
+  "removeTasks": {
+    "common": [],
+    "dev": [],
+    "dist": []
+  },
+  "prependTasks": {
+    "common": [],
+    "dev": [],
+    "dist": []
+  },
+  "appendTasks": {
+    "common": [],
+    "dev": [],
+    "dist": []
+  },
+  "loadNpmTasks": [],
+  "enableSass": false,
+  "enableAssetFingerprint": false,
+  "assetFingerprint": {
+    "options": {
+      "manifestPath": "<%= files.assetFingerprint.manifest %>",
+      "findAndReplaceFiles": "<%= files.assetFingerprint.textFiles %>",
+      "keepOriginalFiles": false
+    },
+    "dist": {
+      "files": [
+        {
+          "expand": true,
+          "cwd": "dist",
+          "src": [
+            "<%= files.img.root %>/**/*",
+            "<%= files.webfonts.root %>/**/*",
+            "<%= files.js.minifiedWebRelative %>",
+            "<%= files.css.minifiedWebRelative %>"
+          ],
+          "dest": "dist"
+        }
+      ]
+    }
+  },
+  "clean": {
+    "dist": {
+      "src": [
+        "dist",
+        "generated"
+      ]
+    }
+  },
+  "coffee": {
+    "compile": {
+      "files": {
+        "<%= files.coffee.generated %>": "<%= files.coffee.app %>",
+        "<%= files.coffee.generatedSpec %>": "<%= files.coffee.spec %>",
+        "<%= files.coffee.generatedSpecHelpers %>": "<%= files.coffee.specHelpers %>"
+      }
+    }
+  },
+  "concat_sourcemap": {
+    "options": {
+      "sourcesContent": true
+    },
+    "js": {
+      "src": [
+        "<%= files.js.vendor %>",
+        "<%= files.template.generated %>",
+        "<%= files.js.app %>",
+        "<%= files.coffee.generated %>"
+      ],
+      "dest": "<%= files.js.concatenated %>"
+    },
+    "spec": {
+      "src": [
+        "<%= files.js.specHelpers %>",
+        "<%= files.coffee.generatedSpecHelpers %>",
+        "<%= files.js.spec %>",
+        "<%= files.coffee.generatedSpec %>"
+      ],
+      "dest": "<%= files.js.concatenatedSpec %>"
+    },
+    "css": {
+      "src": [
+        "<%= files.sass.generatedVendor %>",
+        "<%= files.css.vendor %>",
+        "<%= files.sass.generatedApp %>",
+        "<%= files.css.app %>"
+      ],
+      "dest": "<%= files.css.concatenated %>"
+    }
+  },
+  "copy": {
+    "dev": {
+      "files": [
+        {
+          "expand": true,
+          "cwd": "vendor/static",
+          "src": "**",
+          "dest": "generated"
+        },
+        {
+          "expand": true,
+          "cwd": "app/static",
+          "src": "**",
+          "dest": "generated"
+        }
+      ]
+    },
+    "dist": {
+      "files": [
+        {
+          "expand": true,
+          "cwd": "vendor/static",
+          "src": "**",
+          "dest": "dist"
+        },
+        {
+          "expand": true,
+          "cwd": "app/static",
+          "src": "**",
+          "dest": "dist"
+        }
+      ]
+    }
+  },
+  "cssmin": {
+    "compress": {
+      "files": {
+        "<%= files.css.minified %>": "<%= files.css.concatenated %>"
+      }
+    }
+  },
+  "handlebars": {
+    "compile": {
+      "files": {
+        "<%= files.template.generatedHandlebars %>": "<%= files.template.handlebars %>"
+      }
+    }
+  },
+  "images": {
+    "files": {
+      "app/img/": "<%= files.img.app %>",
+      "vendor/img/": "<%= files.img.vendor %>"
+    },
+    "root": "<%= files.img.root %>",
+    "dev": {
+      "dest": "generated"
+    },
+    "dist": {
+      "dest": "dist"
+    }
+  },
+  "jshint": {
+    "files": [
+      "<%= files.js.app %>"
+    ],
+    "options": {
+      "curly": true,
+      "eqeqeq": true,
+      "latedef": true,
+      "newcap": true,
+      "noarg": true,
+      "boss": true,
+      "eqnull": true,
+      "sub": true,
+      "browser": true
+    }
+  },
+  "jst": {
+    "compile": {
+      "files": {
+        "<%= files.template.generatedUnderscore %>": "<%= files.template.underscore %>"
+      }
+    }
+  },
+  "pages": {
+    "dev": {
+      "files": {
+        "generated": "<%= files.pages.source %>",
+        "generated/index.html": "app/templates/homepage.*"
+      },
+      "context": {
+        "js": "js/app.js",
+        "css": "css/app.css"
+      }
+    },
+    "dist": {
+      "files": {
+        "dist": "<%= files.pages.source %>",
+        "dist/index.html": "app/templates/homepage.*"
+      },
+      "context": {
+        "js": "js/app.js",
+        "css": "css/app.css"
+      }
+    }
+  },
+  "sass": {
+    "compile": {
+      "options": {
+        "excludeRubyOptions": [
+          "includePaths"
+        ],
+        "loadPath": [
+          "app/css",
+          "vendor/css"
+        ],
+        "includePaths": [
+          "app/css",
+          "vendor/css"
+        ]
+      },
+      "files": {
+        "<%= files.sass.generatedApp %>": "<%= files.sass.main %>"
+      }
+    }
+  },
+  "server": {
+    "base": "generated",
+    "web": {
+      "port": 8000
+    },
+    "apiProxy": {
+      "enabled": false,
+      "changeOrigin": true,
+      "host": "localhost",
+      "port": 3000,
+      "useSsl": false
+    },
+    "liveReload": {
+      "enabled": false,
+      "port": 35729
+    }
+  },
+  "spec": {
+    "files": [
+      "<%= files.js.concatenated %>",
+      "<%= files.js.concatenatedSpec %>"
+    ],
+    "options": {
+      "growl": false
+    }
+  },
+  "uglify": {
+    "options": {
+      "banner": "<%= meta.banner %>"
+    },
+    "js": {
+      "files": {
+        "<%= files.js.minified %>": "<%= files.js.concatenated %>"
+      }
+    }
+  },
+  "watch": {
+    "options": {
+      "spawn": false,
+      "module": "grunt-watch-nospawn"
+    },
+    "js": {
+      "files": [
+        "<%= files.js.vendor %>",
+        "<%= files.js.app %>"
+      ],
+      "tasks": [
+        "concat_sourcemap:js"
+      ]
+    },
+    "coffee": {
+      "files": "<%= files.coffee.app %>",
+      "tasks": [
+        "coffee",
+        "concat_sourcemap:js"
+      ]
+    },
+    "jsSpecs": {
+      "files": [
+        "<%= files.js.specHelpers %>",
+        "<%= files.js.spec %>"
+      ],
+      "tasks": [
+        "concat_sourcemap:spec"
+      ]
+    },
+    "coffeeSpecs": {
+      "files": [
+        "<%= files.coffee.specHelpers %>",
+        "<%= files.coffee.spec %>"
+      ],
+      "tasks": [
+        "coffee",
+        "concat_sourcemap:spec"
+      ]
+    },
+    "css": {
+      "files": [
+        "<%= files.css.vendor %>",
+        "<%= files.css.app %>"
+      ],
+      "tasks": [
+        "concat_sourcemap:css"
+      ]
+    },
+    "less": {
+      "files": [
+        "app/css/**/*.less",
+        "vendor/css/**/*.less"
+      ],
+      "tasks": [
+        "learnAboutLinemanPlugin:lineman-less"
+      ]
+    },
+    "sass": {
+      "files": [
+        "<%= files.sass.vendor %>",
+        "<%= files.sass.app %>"
+      ],
+      "tasks": [
+        "sass",
+        "concat_sourcemap:css"
+      ]
+    },
+    "pages": {
+      "files": [
+        "<%= files.pages.source %>",
+        "app/templates/homepage.us"
+      ],
+      "tasks": [
+        "pages:dev"
+      ]
+    },
+    "handlebars": {
+      "files": "<%= files.template.handlebars %>",
+      "tasks": [
+        "handlebars",
+        "concat_sourcemap:js"
+      ]
+    },
+    "underscore": {
+      "files": "<%= files.template.underscore %>",
+      "tasks": [
+        "jst",
+        "concat_sourcemap:js"
+      ]
+    },
+    "images": {
+      "files": [
+        "<%= files.img.app %>",
+        "<%= files.img.vendor %>"
+      ],
+      "tasks": [
+        "images:dev"
+      ]
+    },
+    "lint": {
+      "files": "<%= files.js.app %>",
+      "tasks": [
+        "jshint"
+      ]
+    },
+    "webfonts": {
+      "files": "<%= files.webfonts.vendor %>",
+      "tasks": [
+        "webfonts:dev"
+      ]
+    }
+  },
+  "webfonts": {
+    "files": {
+      "vendor/webfonts/": "<%= files.webfonts.vendor %>"
+    },
+    "root": "<%= files.webfonts.root %>",
+    "dev": {
+      "dest": "generated"
+    },
+    "dist": {
+      "dest": "dist"
+    }
+  },
+  "files": {
+    "coffee": {
+      "app": "app/js/**/*.coffee",
+      "spec": "spec/**/*.coffee",
+      "specHelpers": "spec/helpers/**/*.coffee",
+      "generated": "generated/js/app.coffee.js",
+      "generatedSpec": "generated/js/spec.coffee.js",
+      "generatedSpecHelpers": "generated/js/spec-helpers.coffee.js"
+    },
+    "js": {
+      "app": "app/js/**/*.js",
+      "vendor": "vendor/js/**/*.js",
+      "spec": "spec/**/*.js",
+      "specHelpers": "spec/helpers/**/*.js",
+      "concatenated": "generated/js/app.js",
+      "concatenatedSpec": "generated/js/spec.js",
+      "minified": "dist/js/app.js",
+      "minifiedWebRelative": "js/app.js"
+    },
+    "sass": {
+      "main": [
+        "app/css/main.scss",
+        "app/css/main.sass"
+      ],
+      "vendor": [
+        "vendor/css/**/*.scss",
+        "vendor/css/**/*.sass"
+      ],
+      "app": [
+        "app/css/**/*.scss",
+        "app/css/**/*.sass"
+      ],
+      "generatedVendor": "generated/css/vendor.sass.css",
+      "generatedApp": "generated/css/app.sass.css"
+    },
+    "css": {
+      "vendor": "vendor/css/**/*.css",
+      "app": "app/css/**/*.css",
+      "concatenated": "generated/css/app.css",
+      "minified": "dist/css/app.css",
+      "minifiedWebRelative": "css/app.css"
+    },
+    "template": {
+      "handlebars": "app/templates/**/*.{hb,hbs,handlebar,handlebars}",
+      "underscore": [
+        "app/templates/**/*.underscore",
+        "app/templates/**/*.us"
+      ],
+      "generatedHandlebars": "generated/template/handlebars.js",
+      "generatedUnderscore": "generated/template/underscore.js",
+      "generated": "generated/template/**/*.js"
+    },
+    "pages": {
+      "source": "app/pages/**/*.*"
+    },
+    "img": {
+      "app": "app/img/**/*.*",
+      "vendor": "vendor/img/**/*.*",
+      "root": "img"
+    },
+    "webfonts": {
+      "vendor": "vendor/webfonts/**/*.*",
+      "root": "webfonts"
+    },
+    "assetFingerprint": {
+      "manifest": "dist/assets.json",
+      "textFiles": [
+        "dist/**/*.{js,css,html,xml}"
+      ]
+    }
+  }
+}
