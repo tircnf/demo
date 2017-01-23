@@ -7,7 +7,7 @@
 /generated
 
 .sass-cache
-/bower_components
+bower_components
 
 
 ## hmm. we don't want to check these in because the are controlled by bower/bower-copy.

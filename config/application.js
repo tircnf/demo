@@ -79,6 +79,14 @@ module.exports = function(lineman) {
                 "js/angular.js": "angular/angular.js",
                 "js/angular-route.js": "angular-route/angular-route.js"
             }
+        },
+        ngMock: {
+            options: {
+                destPrefix: "spec/helpers/bower_components",
+            },
+            files: {
+                "angular-mocks.js": "angular-mocks/angular-mocks.js"
+            }
         }
 
 
