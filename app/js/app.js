@@ -1,14 +1,34 @@
 
 var app=angular.module("app", ['ngRoute']);
 
-app.controller("ctrl", function($scope, $route, $routeParams, $location) {
+app.controller("ctrl", function($scope, $route, $routeParams, $location, $rootScope) {
   $scope.scopedata="hello world from controller";
-
 
   // for debugging on index.html
   $scope.$route=$route;
   $scope.$routeParams=$routeParams;
   $scope.$location=$location;
+
+  $scope.scopedata="scopedata inside ctrl controller";
+
+  $rootScope.$on("$locationChangeStart", function(event, next, current) {
+        console.log("Location change starting..",arguments);
+        $scope.scopedata="BUSY!!!!!";
+
+
+        // Can stop the location change with event.preventDefault();
+        // just for fun, once they hit the "slow" page, don't let them change pages unless they hit the "home" page.
+        if (current==="http://localhost:8000/index.html#/Slow" && next !== "http://localhost:8000/index.html") {
+            $scope.scopedata="YOu are now stuck here!";
+            event.preventDefault();
+        }
+  });
+
+  $rootScope.$on("$routeChangeSuccess", function() {
+        console.log("route change Finished..",arguments);
+        $scope.scopedata="";
+  });
+
 });
 
 
@@ -20,11 +40,17 @@ app.controller("BookController",function($scope, $routeParams) {
 
 
 app.controller("SlowController", function($scope) {
-    console.log("Scope = ",$scope);
+    //console.log("Scope = ",$scope);
     // to make things fun, the $resolve isn't added to scope until after the controller method fires..
     // so the log below will always log undefined..
     // but if put in a timeout to run a bit later, will have a value.
-    console.log("Scope.$resolve = ",$scope.$resolve);
+    //console.log("Scope.$resolve = ",$scope.$resolve);
+    //
+    //vs
+    //
+    //setTimeout(function() { 
+    //console.log("Scope.$resolve = ",$scope.$resolve);
+    //},1000);
 
 
 });
