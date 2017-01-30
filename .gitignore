@@ -9,8 +9,5 @@
 .sass-cache
 bower_components
 
+*.swp
 
-## hmm. we don't want to check these in because the are controlled by bower/bower-copy.
-#But I think lineman uses a different approach and would check check-in 3rd party dependencies.
-#oh well.. do this for now.
-/vendor

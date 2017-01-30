@@ -53,7 +53,7 @@ module.exports = function(lineman) {
     // make a change in each browser you're working against. To enable LiveReload,
     // comment out the following line:
     //
-    livereload: true,
+      livereload: true,
 
       loadNpmTasks: lineman.config.application.loadNpmTasks.concat("grunt-bowercopy"),
 
@@ -69,7 +69,7 @@ module.exports = function(lineman) {
       bowercopy: {
         options: {
             srcPrefix: "bower_components/",
-            destPrefix: "vendor/"
+            destPrefix: "vendor/bower_components/"
         } ,
         angular: {
             // list of destination: source
@@ -88,7 +88,6 @@ module.exports = function(lineman) {
                 "angular-mocks.js": "angular-mocks/angular-mocks.js"
             }
         }
-
 
       }
 

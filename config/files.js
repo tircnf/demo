@@ -13,8 +13,8 @@ module.exports = function(lineman) {
     // force angular to get sourced in first.
     js: {
       vendor: [
-        "vendor/js/angular.js",
-        "vendor/js/**/*.js"
+        "vendor/bower_components/js/angular.js",
+        "vendor/**/*.js"
       ]
     }
 
