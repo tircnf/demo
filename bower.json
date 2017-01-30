@@ -19,7 +19,7 @@
     "angular": "^1.6.1"
   },
   "dependencies": {
-    "angular-route": "^1.6.1",
-    "angular-mocks": "^1.6.1"
+    "angular-mocks": "^1.6.1",
+    "angular-ui-router": "^0.4.2"
   }
 }

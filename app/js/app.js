@@ -1,115 +1,89 @@
 
-var app=angular.module("app", ['ngRoute']);
+var app=angular.module("app", ['ui.router']);
 
-app.controller("ctrl", function($scope, $route, $routeParams, $location, $rootScope) {
+app.controller("ctrl", function($scope) {
   $scope.scopedata="hello world from controller";
 
-  // for debugging on index.html
-  $scope.$route=$route;
-  $scope.$routeParams=$routeParams;
-  $scope.$location=$location;
-
-  $scope.scopedata="scopedata inside ctrl controller";
-
-  $scope.goto=function(location) {
-    console.log("location should = $location");
-  };
-
-  $rootScope.$on("$locationChangeStart", function(event, next, current) {
-        console.log("Location change starting..",arguments);
-        $scope.scopedata="BUSY!!!!!";
-
-
-        // Can stop the location change with event.preventDefault();
-        // just for fun, once they hit the "slow" page, don't let them change pages unless they hit the "home" page.
-        if (current==="http://localhost:8000/index.html#/Slow" && next !== "http://localhost:8000/index.html") {
-            $scope.scopedata="YOu are now stuck here!";
-            event.preventDefault();
-        }
-  });
-
-  $rootScope.$on("$routeChangeSuccess", function() {
-        console.log("route change Finished..",arguments);
-        $scope.scopedata="";
-  });
-
 });
 
 
-app.controller("BookController",function($scope, $routeParams) {
-    $scope.name="Book Controller";
-    $scope.params=$routeParams;
-});
+app.config(function($stateProvider, $urlRouterProvider ) {
 
+    var indexState={
+        name: 'index',
+        url: '/',
+        template: 'Boring Index file.  Try clicking <a ui-sref="hello">hello</a> or <a ui-sref="books.book({bookId:1})">The Princess Bride</a>'
+    };
 
+    var helloState= {
+        name: 'hello',
+        url:  '/hello',
+        template: '<h3> hello world </h3>'
+    };
 
-app.controller("SlowController", function($scope) {
-    //console.log("Scope = ",$scope);
-    // to make things fun, the $resolve isn't added to scope until after the controller method fires..
-    // so the log below will always log undefined..
-    // but if put in a timeout to run a bit later, will have a value.
-    //console.log("Scope.$resolve = ",$scope.$resolve);
-    //
-    //vs
-    //
-    //setTimeout(function() { 
-    //console.log("Scope.$resolve = ",$scope.$resolve);
-    //},1000);
+    var booksState = {
+        name: 'books',
+        url:  '/books',
+        controller: function($scope, books) {
+            // check out the page on angular components (template/controller/bindings)
+            // you can create a bindings: {books: '<'} in your component, and the books
+            // variable will get added directly to your controller (mix with controller as syntax)
+            // to get $ctl.books
+            
+            $scope.books=books;
+        },
+        templateUrl: "books.html",
+        resolve: {
+            books: function() {
+                // move to a function.. inject bookService.
+                var bookList=[
+                        {title: "Moby Dick", text: "blah blah moby dick.. big fist, etc"},
+                        {title: "The Princess Bride", text: "As you wish... blah blah blah... big giant"},
+                        {title: "Dune", text: "Lots of Sand... little mouse.. "}];
+                return bookList;
 
-
-});
-
-
-app.config(function($routeProvider, $locationProvider) {
-    /*
-          <!-- lots of issues here, depending on whether or not you are using html5 mode..
-          <sigh>
-                if you have html5 mode enabled... then the # will not show up in the url (you get some push state crap).
-                so imagine old school would have looked like  http://site:8080/#Book/something
-                in html 5 land you have                       http://site:8080/Book/something
-
-                if the users refreshes the page, the server looks for Book/something unless you have some rewriting rules turned on.
-                instead of index.html#Book:(
-
-                so to make it work for everyone, you can disable html5 and put the bang back.
-                angular 1.6 changes # to #!... and that seem to also break in weird ways.
-                $locationProvider.hashPrefix('');  will remove the '!'
-
-                so to make things work, I had to turn off html, and change the rewrite prefix to '' (from '!').
-
-                plus... add the # to every URL.  I think it might be better to use the onclick and "$location.goto" intead of a link.
-                that might make things work better. 
-          -->
-
-     */
-    $locationProvider.hashPrefix('');
-    //$locationProvider.html5Mode(true);
-    $routeProvider
-        .when('/', {
-            template: "<b> you are at slash </b>"
-        })
-        .when('/Slow', {
-            template: "<h5>... worked a long time to figure out that the answer is {{$resolve.slowValue}} and the easy answer was {{$resolve.fastValue}}.</h5>",
-            controller: "SlowController",
-            resolve: {
-                // I will cause a 1 second delay
-                slowValue: function($q, $timeout) {
-                    var delay = $q.defer();
-                    $timeout(function() {console.log("calling resolve..");delay.resolve("3.14159");}, 3000);
-                    return delay.promise;
-                },
-                fastValue: function() {return "-1";}
             }
+        }
+    };
 
-        })
-        .when('/Book/:bookId', {
-            controller:'BookController',
-            templateUrl: "book.html"
-        })
-        .when('/Book/:bookId/ch/:chapterId?', {
-            controller:'BookController',
-            templateUrl: "book.html"
-        });
+    var bookState = {
+        name: 'books.book',
+        url: '/{bookId}',
+        templateUrl: "book.html",
+        controller: function($scope, book, $stateParams) {
+            // like previous comment.. have to manually add stuff from the
+            // resolve block to the scope.
+            $scope.book=book;
+            $scope.bookId=$stateParams.bookId;
+        },
+        resolve: {
+            book:   function(books, $stateParams,$q, $timeout) {
+                var defer=$q.defer();
+                // pretend there is a .5 second delay to fetch the book information.
+                // this looks okay when you navigation from books to books/{bookId}
+                // but if you refresh the page, nothing displays until the full child is
+                // resolved.
+                // this might "look" better... if the book list were to come up
+                // with its "instant" resolve, and then wait for the book to come up.
+                // but I don't think you can use this resolve code to do that. :(
+                // and will have to manually resolve.
+                // I guess that's for next weekend.
+                $timeout(function() {
+                    defer.resolve(books[$stateParams.bookId]);
+                },500);
+
+                return defer.promise;
+            }
+        }
+    };
+
+
+    $stateProvider.state(indexState);
+    $stateProvider.state(helloState);
+    $stateProvider.state(booksState);
+    $stateProvider.state(bookState);
+
+    $urlRouterProvider.otherwise("/");
 
 });
 

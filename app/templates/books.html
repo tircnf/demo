@@ -1,0 +1,8 @@
+
+<h3>Book List 
+    <ul>
+        <li ng-repeat='book in books'> <a ui-sref='.book({bookId:$index})' ui-sref-active="active"> {{book.title}} </a>  </li>
+    </ul>
+</h3> 
+
+<div ui-view></div>
