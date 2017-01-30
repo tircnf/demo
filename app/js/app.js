@@ -11,6 +11,10 @@ app.controller("ctrl", function($scope, $route, $routeParams, $location, $rootSc
 
   $scope.scopedata="scopedata inside ctrl controller";
 
+  $scope.goto=function(location) {
+    console.log("location should = $location");
+  };
+
   $rootScope.$on("$locationChangeStart", function(event, next, current) {
         console.log("Location change starting..",arguments);
         $scope.scopedata="BUSY!!!!!";
@@ -60,11 +64,11 @@ app.config(function($routeProvider, $locationProvider) {
     /*
           <!-- lots of issues here, depending on whether or not you are using html5 mode..
           <sigh>
-                if you have html5 mode enabled... then the # will not who up in the url (you get some push state crap).
+                if you have html5 mode enabled... then the # will not show up in the url (you get some push state crap).
                 so imagine old school would have looked like  http://site:8080/#Book/something
                 in html 5 land you have                       http://site:8080/Book/something
 
-                if the users refreshes the page, the server looks for Book unless you have some rewriting rules turned on.
+                if the users refreshes the page, the server looks for Book/something unless you have some rewriting rules turned on.
                 instead of index.html#Book:(
 
                 so to make it work for everyone, you can disable html5 and put the bang back.

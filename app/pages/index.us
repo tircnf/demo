@@ -23,7 +23,7 @@
 
           <!-- lots of issues here, depending on whether or not you are using html5 mode..
           <sigh>
-                if you have html5 mode enabled... then the # will not who up in the url (you get some push state crap).
+                if you have html5 mode enabled... then the # will not show up in the url (you get some push state crap).
                 so imagine old school would have looked like  http://site:8080/#Book/something
                 in html 5 land you have                       http://site:8080/Book/something
 
@@ -37,7 +37,7 @@
                 plus... add the # to every URL.
 
           -->
-          <a href="#">nothing..</a>
+          <a href="#" ng-click="goto('hello')">nothing..</a>
           <a href="#Book/Moby">Moby</a>
           <a href="#Book/Moby/ch/1">Moby: CH1</a>
           <a href="#Slow">Long running job</a>
