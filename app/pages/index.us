@@ -22,7 +22,7 @@
 
       <div ng-app="app" ng-controller="ctrl" ng-cloak>
           <br>
-          {{scopedata}} 
+          {{scopedata}}   {{busy()}}
           </br>
 
           <mike>
