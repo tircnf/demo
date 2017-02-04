@@ -13,15 +13,16 @@
  */
 
 
-// what happens with global variables here??
-
+// id must be a number because when the book is returned it sleeps for
+// id*100 ms before returning the book.
 var _bookList=[
-        {title: "Moby Dick", text: "blah blah moby dick.. big fist, etc"},
-        {title: "The Princess Bride", text: "As you wish... blah blah blah... big giant"},
-        {title: "Charlie and the Chocolate Factory", text: "Eat lots and lots of chocolate."},
-        {title: "The Mouse and his Child", text: "You have to find the last visible dog"},
-        {title: "Dune", text: "Lots of Sand... little mouse.. "},
-        {title: "Dune Messiah", text: "Is this the one where he goes blind? "}
+        {id: 0, title: "Moby Dick", text: "blah blah moby dick.. big fist, etc", cover: "https://images-na.ssl-images-amazon.com/images/I/71Q4R237BZL.jpg"},
+        {id: 1,title: "The Princess Bride", text: "As you wish... blah blah blah... big giant", cover: "https://images-na.ssl-images-amazon.com/images/I/510yzqD6ukL._SX302_BO1,204,203,200_.jpg"},
+        {id: 2,title: "Charlie and the Chocolate Factory", text: "Eat lots and lots of chocolate.", cover: "https://i3.bookpage.com/books/images/e6494286946ac087ff804110b5692ffa/medium.jpg"}, 
+        {id: 3, title: "This book causes a server error", text: "This book is not defined and will throw a 500 server error"},
+        {id: 4,title: "The Mouse and his Child", text: "You have to find the last visible dog", cover: "https://upload.wikimedia.org/wikipedia/en/thumb/e/e1/TheMouseAndHisChild.jpg/220px-TheMouseAndHisChild.jpg"},
+        {id: 5,title: "Dune", text: "Lots of Sand... little mouse.. ", cover: "https://cf.geekdo-images.com/images/pic279251.jpg"},
+        {id: 6,title: "Dune Messiah", text: "Is this the one where he goes blind? ", cover: "http://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1213426839i/117902._UY200_.jpg"}
         ];
 
 
@@ -52,7 +53,7 @@ module.exports = {
 
         setTimeout(function() {
             if (req.params.id==3) {
-                res.status(500).send("Error.  Unable to mess with this mouse and child");
+                res.status(500).send("Error.  Unable to mess with this book.");
             } else {
                 res.json(_bookList[req.params.id]);
             }

@@ -1,9 +1,10 @@
 
-<h3>Book List   <button ng-show="!books.loading" ng-click="refreshList()">Refresh the Book List</button>
+<h3>Book List   <input ng-model="q" placeholder="search"> <button ng-show="!books.loading" ng-click="refreshList()">Refresh the Book List</button>
 
-    <ul>
+    <div>{{books.error}}</div>
+    <ul style="min-height:200px">
         <li ng-show="books.loading"> Loading...  <img src="img/ajax-loader-bar.gif" alt="Busy...">
-        <li ng-repeat='book in books'> <a ui-sref='.book({bookId:$index})' ui-sref-active="active"> {{book.title}} </a>  </li>
+        <li ng-repeat='book in books | filter:q'> <a ng-click="clearSearch()" ui-sref='.book({bookId:book.id})' ui-sref-active="active"> {{book.title}} </a>  </li>
     </ul>
 </h3> 
 

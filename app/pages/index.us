@@ -18,19 +18,14 @@
 
   </head>
   <body>
-      <h1> Hello World </h2>
 
       <div ng-app="app" ng-controller="ctrl" ng-cloak>
-          <br>
-          {{scopedata}}   <span ng-show="busy()"><img src="img/ajax-loader.gif" alt="Busy..."></span>
-          </br>
 
           <mike>
             this will disappear.  the 'mike' element doesn't have a transclude
           </mike>
 
           Choose:
-
 
           <a ui-sref="index" ui-sref-active='active'>Index</a>
           <a ui-sref="books" ui-sref-active='active'>Books</a>

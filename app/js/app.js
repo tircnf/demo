@@ -2,130 +2,10 @@
 var app=angular.module("app", ['ui.router']);
 
 
-// this service just knows if the system is busy changing state.
-// It should only really ever be busy if a resolve block is waiting for data.
-//
-app.service('SpinnerService', function($rootScope) {
-    var count=0;
 
-    var service= {
-        busy: function() {return count>0;},
-        transitionStart: function() {++count;},
-        transitionEnd: function() {--count;}
-    };
-
-
-    // documentation is missing stateChangeCancel
-
-    $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams, options) {
-        //console.log("Event = ",event);
-        service.transitionStart();
-    });
-
-    $rootScope.$on('$stateChangeSuccess',function (event, toState, toParams, fromState, fromParams, options) {
-        //console.log("Event = ",event);
-        service.transitionEnd();
-    });
-
-    $rootScope.$on('$stateChangeError',function (event, toState, toParams, fromState, fromParams, options) {
-        //console.log("Event = ",event);
-        service.transitionEnd();
-    });
-
-    // this event was added sept 2016, and is not documented yet.
-    $rootScope.$on('$stateChangeCancel',function (event, toState, toParams, fromState, fromParams, options) {
-        //console.log("Event = ",event);
-        service.transitionEnd();
-    });
-
-    $rootScope.$on('$stateNotFound', function(event, unfoundState, fromState, fromParams) {
-        console.log("Event = ",event);
-        console.log("unfoundState = ",unfoundState);
-        console.log("fromState = ",fromState);
-        console.log("fromParams = ",fromParams);
-        console.log("\n\n");
-    });
-
-    return service;
-});
-
-
-app.controller("ctrl", function($scope, $rootScope, SpinnerService) {
-  $scope.scopedata="hello world from controller";
-
-  $scope.busy=SpinnerService.busy;
+app.controller("ctrl", function($scope, $rootScope) {
 
 });
-
-app.service('BookService', function($http) {
-
-    var service={};
-
-    // cached bookList.
-    var bookList=[];
-
-    var getBookList=function() {
-
-
-        // if we have already resolved the bookList, just return it.
-        // this code uses "loading" to determine if it is being fetched, or has been fetched.
-        // if this variable doesn't exist, we need to go grab it.
-        if (bookList.loading!==undefined) {
-            return bookList;
-        }
-
-        var promise=$http.get("/api/books").then(function success(response) {
-            // response has {data:.., status:<number>, headers: <function(headerName)>, config: <object>, statusText: http status text}
-            angular.extend(bookList, response.data);
-            bookList.loading=false;
-        }, function err() {
-            console.error("Error... ",arguments);
-            bookList.promise=undefined;
-            bookList.loading=undefined;
-        });
-
-        bookList.promise=promise;
-        bookList.loading=true;
-
-        return bookList;
-    };
-
-    var refreshList=function() {
-        bookList.length=0;
-        bookList.promise=undefined;
-        bookList.loading=undefined;
-        getBookList();
-    };
-
-    var getBook=function(id) {
-
-        var book={id:id};
-
-        var promise=$http.get("/api/books/"+id).then(function success(response) {
-            angular.extend(book, response.data);
-            book.loading=false;
-        }, function err() {
-            console.error("Error... ",arguments);
-            book.loading=undefined;
-            book.promise=undefined;
-        });
-
-        book.promise=promise;
-        book.loading=true;
-
-        return book;
-    };
-
-
-    service.getBook=getBook;
-    service.bookList=getBookList;
-    service.refreshList=refreshList;
-
-
-    return service;
-
-});
-
 
 app.config(function($stateProvider, $urlRouterProvider ) {
 
@@ -138,13 +18,31 @@ app.config(function($stateProvider, $urlRouterProvider ) {
     var booksState = {
         name: 'books',
         url:  '/books',
-        controller: function($scope, books, BookService) {
+        controller: function($scope, books, BookService,$timeout) {
             // check out the page on angular components (template/controller/bindings)
             // you can create a bindings: {books: '<'} in your component, and the books
             // variable will get added directly to your controller (mix with controller as syntax)
             // to get $ctl.books
 
             $scope.books=books;
+            $scope.clearSearch=function() {
+                // this yucky stuff is in here because of a bad interction with
+                // ng-repeat and the ui.router active directive.
+                // if you clear the query immeidately, I don't know why, but the
+                // active class doesn't get removed from the old selected item.
+                //
+                // search box empty.  select Moby Dick.
+                // then search for "Dune"  (moby dick disappears).
+                // click "dune" (ng-click calls clearSearch).
+                // all the old items come back, including Moby Dick which still has
+                // the active flag.
+                // $scope.digest or $scope.apply don't fix it.
+                // reference this ticket which is closed, but does not fix the issue. :(
+                // https://github.com/angular-ui/ui-router/issues/1997 (and 5 other tickets).
+                $timeout(function() {
+                    $scope.q="";
+                },0);
+            };
 
             // the bookList is cached, so give an option to refresh the list.
             $scope.refreshList=BookService.refreshList;
@@ -153,7 +51,6 @@ app.config(function($stateProvider, $urlRouterProvider ) {
         resolve: {
             books: function(BookService) {
                 return BookService.bookList();
-
             }
         }
     };
@@ -178,7 +75,7 @@ app.config(function($stateProvider, $urlRouterProvider ) {
             // it returns an object that is filled out later. That way the
             // view can render early, show a spinner, and fill in the details
             // when they arrive.
-            
+
             //thing: function($q,$timeout) {
             //    var defer=$q.defer();
             //    $timeout(function() {

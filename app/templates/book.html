@@ -3,10 +3,23 @@
     <!-- <img src="img/ajax-loader-pacman.gif" alt="Busy..."> -->
    <img src="img/ajax-loader-hasselhoff.gif" alt="Busy...">
 </div>
+
+
 <div ng-hide="book.loading">
-book {{bookId}}-{{book.title}}  
 
-<p>{{book.text}}</p>
 
+    <div id="container">
+        <div  style="display: inline-block; vertical-align: top">
+            <div>
+                {{book.error}}
+            </div>
+             book {{bookId}}-{{book.title}}  
+             <p>{{book.text}}</p>
+        </div>
+
+        <div  style="display: inline-block; vertical-align: top">
+            <img style="height:300px" ng-show="book.cover" ng-src="{{book.cover}}">
+        </div>
+    </div>
 <div>
 
