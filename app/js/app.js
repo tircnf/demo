@@ -57,71 +57,61 @@ app.controller("ctrl", function($scope, $rootScope, SpinnerService) {
 
 });
 
-app.service('BookService', function($q, $timeout) {
+app.service('BookService', function($http) {
 
     var service={};
-
-    // pretend this is out on a server somewhere.
-    var _bookList=[
-            {title: "Moby Dick", text: "blah blah moby dick.. big fist, etc"},
-            {title: "The Princess Bride", text: "As you wish... blah blah blah... big giant"},
-            {title: "Dune", text: "Lots of Sand... little mouse.. "}];
-
 
     // cached bookList.
     var bookList=[];
 
     var getBookList=function() {
 
+
         // if we have already resolved the bookList, just return it.
-        if (bookList.promise) {
+        // this code uses "loading" to determine if it is being fetched, or has been fetched.
+        // if this variable doesn't exist, we need to go grab it.
+        if (bookList.loading!==undefined) {
             return bookList;
         }
-        console.log("Simulating fetching list from server.");
 
-        var defer=$q.defer();
-        bookList.promise=defer.promise;
-        bookList.loading=true;
-
-        $timeout(function() {
-            defer.resolve(_bookList);
-            console.log("simulating fetched list from server");
-        },1000);
-
-        defer.promise.then(function(obj) {
+        var promise=$http.get("/api/books").then(function success(response) {
+            // response has {data:.., status:<number>, headers: <function(headerName)>, config: <object>, statusText: http status text}
+            angular.extend(bookList, response.data);
             bookList.loading=false;
-            angular.extend(bookList,obj);
+        }, function err() {
+            console.error("Error... ",arguments);
+            bookList.promise=undefined;
+            bookList.loading=undefined;
         });
+
+        bookList.promise=promise;
+        bookList.loading=true;
 
         return bookList;
     };
 
     var refreshList=function() {
         bookList.length=0;
-        bookList.promise=false;
+        bookList.promise=undefined;
+        bookList.loading=undefined;
         getBookList();
     };
 
     var getBook=function(id) {
 
-        var defer=$q.defer();
-        var book={id:id, promise:defer.promise, loading:true};
+        var book={id:id};
 
-        defer.promise.then(function(obj) {
+        var promise=$http.get("/api/books/"+id).then(function success(response) {
+            angular.extend(book, response.data);
             book.loading=false;
-            angular.extend(book,obj);
+        }, function err() {
+            console.error("Error... ",arguments);
+            book.loading=undefined;
+            book.promise=undefined;
         });
 
-
-        // the BookList is a remote resource..
-        // make sure it is resolved before looking up the id.
-        // this wouldn't really be necessry if getBook fetched the book info from
-        // the server.
-        getBookList().promise.then(function() {
-            $timeout(function() {
-               defer.resolve(bookList[id]);
-            },1000);
-        });
+        book.promise=promise;
+        book.loading=true;
 
         return book;
     };
@@ -142,13 +132,7 @@ app.config(function($stateProvider, $urlRouterProvider ) {
     var indexState={
         name: 'index',
         url: '/',
-        template: 'Boring Index file.  Try clicking <a ui-sref="hello">hello</a> or <a ui-sref="books.book({bookId:1})">The Princess Bride</a>'
-    };
-
-    var helloState= {
-        name: 'hello',
-        url:  '/hello',
-        template: '<h3> hello world </h3>'
+        template: '<br><br><br>Boring Index file.  Try clicking <a ui-sref="books">Books</a> or <a ui-sref="books.book({bookId:1})">The Princess Bride</a>'
     };
 
     var booksState = {
@@ -212,7 +196,6 @@ app.config(function($stateProvider, $urlRouterProvider ) {
 
 
     $stateProvider.state(indexState);
-    $stateProvider.state(helloState);
     $stateProvider.state(booksState);
     $stateProvider.state(bookState);
 

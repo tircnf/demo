@@ -33,7 +33,6 @@
 
 
           <a ui-sref="index" ui-sref-active='active'>Index</a>
-          <a ui-sref="hello" ui-sref-active='active'>Hello</a>
           <a ui-sref="books" ui-sref-active='active'>Books</a>
 
           <div ui-view></div>
