@@ -1,8 +1,9 @@
 
-<div ng-show="busy()">
-  I am busy...
+<div ng-show="book.loading">
+    <!-- <img src="img/ajax-loader-pacman.gif" alt="Busy..."> -->
+   <img src="img/ajax-loader-hasselhoff.gif" alt="Busy...">
 </div>
-<div ng-hide="busy()">
+<div ng-hide="book.loading">
 book {{bookId}}-{{book.title}}  
 
 <p>{{book.text}}</p>

@@ -2,40 +2,48 @@
 var app=angular.module("app", ['ui.router']);
 
 
+// this service just knows if the system is busy changing state.
+// It should only really ever be busy if a resolve block is waiting for data.
+//
 app.service('SpinnerService', function($rootScope) {
     var count=0;
 
-    var showSpinner=function() {
-        console.log("Spinning... busy");
-    };
-
-    var hideSpinner=function() {
-        console.log("Done.. no longer busy");
-    };
-
     var service= {
-        busy: function() {  return count>0?"BUSY":"";},
-        transitionStart: function() {if (++count>0) {showSpinner();}},
-        transitionEnd: function() {if (--count<=0) {hideSpinner();}}
+        busy: function() {return count>0;},
+        transitionStart: function() {++count;},
+        transitionEnd: function() {--count;}
     };
+
 
     // documentation is missing stateChangeCancel
 
-    $rootScope.$on('$stateChangeStart', function() {
+    $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams, options) {
+        //console.log("Event = ",event);
         service.transitionStart();
     });
 
-    $rootScope.$on('$stateChangeSuccess',function() {
+    $rootScope.$on('$stateChangeSuccess',function (event, toState, toParams, fromState, fromParams, options) {
+        //console.log("Event = ",event);
         service.transitionEnd();
     });
 
-    $rootScope.$on('$stateChangeError',function() {
+    $rootScope.$on('$stateChangeError',function (event, toState, toParams, fromState, fromParams, options) {
+        //console.log("Event = ",event);
         service.transitionEnd();
     });
 
     // this event was added sept 2016, and is not documented yet.
-    $rootScope.$on('$stateChangeCancel',function() {
+    $rootScope.$on('$stateChangeCancel',function (event, toState, toParams, fromState, fromParams, options) {
+        //console.log("Event = ",event);
         service.transitionEnd();
+    });
+
+    $rootScope.$on('$stateNotFound', function(event, unfoundState, fromState, fromParams) {
+        console.log("Event = ",event);
+        console.log("unfoundState = ",unfoundState);
+        console.log("fromState = ",fromState);
+        console.log("fromParams = ",fromParams);
+        console.log("\n\n");
     });
 
     return service;
@@ -47,33 +55,84 @@ app.controller("ctrl", function($scope, $rootScope, SpinnerService) {
 
   $scope.busy=SpinnerService.busy;
 
-  var eventListener=function (event, toState, toParams, fromState, fromParams, options) {
-        console.log("Event = ",event);
-        console.log("toState = ",toState);
-        console.log("toParams = ",toParams);
-        console.log("fromState = ",fromState);
-        console.log("fromParams = ",fromParams);
-        console.log("options = ",options);
+});
 
-        console.log("\n\n");
-  };
+app.service('BookService', function($q, $timeout) {
 
-  var unfoundState=function(event, unfoundState, fromState, fromParams) {
-        console.log("Event = ",event);
-        console.log("unfoundState = ",unfoundState);
-        console.log("fromState = ",fromState);
-        console.log("fromParams = ",fromParams);
-        console.log("\n\n");
-  };
+    var service={};
 
-  // stateChangeEvents are deprecated and disabled by transition Hooks as of version 1.0.
-  // we are using 0.4.2 for now
-  //
-  $rootScope.$on('$stateChangeStart', eventListener);   // can use event.preventDefault() to stop transition.
-  $rootScope.$on('$stateChangeSuccess', eventListener); //
-  $rootScope.$on('$stateChangeError', eventListener);  // different.. no options
-  $rootScope.$on('$stateNotFound', unfoundState);
-  $rootScope.$on('$stateChangeCancel', eventListener);
+    // pretend this is out on a server somewhere.
+    var _bookList=[
+            {title: "Moby Dick", text: "blah blah moby dick.. big fist, etc"},
+            {title: "The Princess Bride", text: "As you wish... blah blah blah... big giant"},
+            {title: "Dune", text: "Lots of Sand... little mouse.. "}];
+
+
+    // cached bookList.
+    var bookList=[];
+
+    var getBookList=function() {
+
+        // if we have already resolved the bookList, just return it.
+        if (bookList.promise) {
+            return bookList;
+        }
+        console.log("Simulating fetching list from server.");
+
+        var defer=$q.defer();
+        bookList.promise=defer.promise;
+        bookList.loading=true;
+
+        $timeout(function() {
+            defer.resolve(_bookList);
+            console.log("simulating fetched list from server");
+        },1000);
+
+        defer.promise.then(function(obj) {
+            bookList.loading=false;
+            angular.extend(bookList,obj);
+        });
+
+        return bookList;
+    };
+
+    var refreshList=function() {
+        bookList.length=0;
+        bookList.promise=false;
+        getBookList();
+    };
+
+    var getBook=function(id) {
+
+        var defer=$q.defer();
+        var book={id:id, promise:defer.promise, loading:true};
+
+        defer.promise.then(function(obj) {
+            book.loading=false;
+            angular.extend(book,obj);
+        });
+
+
+        // the BookList is a remote resource..
+        // make sure it is resolved before looking up the id.
+        // this wouldn't really be necessry if getBook fetched the book info from
+        // the server.
+        getBookList().promise.then(function() {
+            $timeout(function() {
+               defer.resolve(bookList[id]);
+            },1000);
+        });
+
+        return book;
+    };
+
+
+    service.getBook=getBook;
+    service.bookList=getBookList;
+    service.refreshList=refreshList;
+
+
+    return service;
 
 });
 
@@ -95,23 +154,21 @@ app.config(function($stateProvider, $urlRouterProvider ) {
     var booksState = {
         name: 'books',
         url:  '/books',
-        controller: function($scope, books) {
+        controller: function($scope, books, BookService) {
             // check out the page on angular components (template/controller/bindings)
             // you can create a bindings: {books: '<'} in your component, and the books
             // variable will get added directly to your controller (mix with controller as syntax)
             // to get $ctl.books
-            
+
             $scope.books=books;
+
+            // the bookList is cached, so give an option to refresh the list.
+            $scope.refreshList=BookService.refreshList;
         },
         templateUrl: "books.html",
         resolve: {
-            books: function() {
-                // move to a function.. inject bookService.
-                var bookList=[
-                        {title: "Moby Dick", text: "blah blah moby dick.. big fist, etc"},
-                        {title: "The Princess Bride", text: "As you wish... blah blah blah... big giant"},
-                        {title: "Dune", text: "Lots of Sand... little mouse.. "}];
-                return bookList;
+            books: function(BookService) {
+                return BookService.bookList();
 
             }
         }
@@ -122,35 +179,33 @@ app.config(function($stateProvider, $urlRouterProvider ) {
         name: 'books.book',
         url: '/{bookId}',
         templateUrl: "book.html",
-        controller: function($scope, book, $stateParams) {
+        controller: function($scope, $stateParams, book) {
             // like previous comment.. have to manually add stuff from the
             // resolve block to the scope.
-            $scope.book=book;
+
             $scope.bookId=$stateParams.bookId;
+            $scope.book=book;
         },
         resolve: {
-            book:   function(books, $stateParams,$q, $timeout) {
-                counter++;
-                var defer=$q.defer();
-                // pretend there is a .5 second delay to fetch the book information.
-                // this looks okay when you navigation from books to books/{bookId}
-                // but if you refresh the page, nothing displays until the full child is
-                // resolved.
-                // this might "look" better... if the book list were to come up
-                // with its "instant" resolve, and then wait for the book to come up.
-                // but I don't think you can use this resolve code to do that. :(
-                // and will have to manually resolve.
-                // I guess that's for next weekend.
-                $timeout(function() {
-                    if (counter%2) {
-                        defer.resolve(books[$stateParams.bookId]);
-                    } else {
-                        defer.resolve(books[$stateParams.bookId]);
-                        //defer.reject("rejected..");
-                    }
-                },1500);
-
-                return defer.promise;
+            // cause a .1 second delay when switching to this state.
+            // i think I just don't like the behavior when the resolve
+            // block takes a while to resolve, so I probably won't ever
+            // use this.  The "book" section below returns immediately.
+            // it returns an object that is filled out later. That way the
+            // view can render early, show a spinner, and fill in the details
+            // when they arrive.
+            
+            //thing: function($q,$timeout) {
+            //    var defer=$q.defer();
+            //    $timeout(function() {
+            //        console.log("thing resolving after .5 seconds");
+            //        defer.resolve("thing");
+            //    },100);
+            //
+            //    return defer.promise;
+            //},
+            book:   function(books, $stateParams,BookService) {
+                return BookService.getBook($stateParams.bookId);
             }
         }
     };

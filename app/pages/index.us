@@ -22,7 +22,7 @@
 
       <div ng-app="app" ng-controller="ctrl" ng-cloak>
           <br>
-          {{scopedata}}   {{busy()}}
+          {{scopedata}}   <span ng-show="busy()"><img src="img/ajax-loader.gif" alt="Busy..."></span>
           </br>
 
           <mike>

@@ -1,6 +1,8 @@
 
-<h3>Book List 
+<h3>Book List   <button ng-show="!books.loading" ng-click="refreshList()">Refresh the Book List</button>
+
     <ul>
+        <li ng-show="books.loading"> Loading...  <img src="img/ajax-loader-bar.gif" alt="Busy...">
         <li ng-repeat='book in books'> <a ui-sref='.book({bookId:$index})' ui-sref-active="active"> {{book.title}} </a>  </li>
     </ul>
 </h3> 
