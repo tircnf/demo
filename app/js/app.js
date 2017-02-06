@@ -5,13 +5,13 @@ var app=angular.module("app", ['ui.router']);
 
 app.controller("ctrl", function($scope,$http, $rootScope, $state, $interval) {
 
-
     // catch the stateChangeStart.. if we don't have a user yet, and we are not on the index page,
     // store the desired location on scope, and redirect back to index.
     // without a user, the index page shows "login".
 
     $rootScope.$on("$stateChangeStart", function(event, toState, toParams, fromState, fromParams) {
         if ((!$scope.user || $scope.user.loading) && toState !== $state.get("index")) {
+            console.log("stopping transition to " + toState.name);
             event.preventDefault();
             $scope.afterLoginState=toState;
             $scope.afterLoginParams=toParams;
@@ -64,7 +64,9 @@ app.controller("ctrl", function($scope,$http, $rootScope, $state, $interval) {
     $scope.logout=function() {
         $http.post("/api/logout").then(function(response) {
             $scope.user=false;
-            $state.go("index");
+            $state.go("index").then(function() {
+                location.reload();
+            });
          });
     };
 
