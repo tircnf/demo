@@ -6,13 +6,14 @@
 
     <link rel="stylesheet" type="text/css" href="<%= css %>" media="all" />
 <style>
-/* for ui-sref main page.  add a nice color for the active one. 
+/* for ui-sref main page.  add a nice color for the active one.
    stuff here so I dont mistakenly leave it in style.css
 */
 
 .active {
     background-color: green;
 }
+
 </style>
 
 
@@ -21,16 +22,36 @@
 
       <div ng-app="app" ng-controller="ctrl" ng-cloak>
 
-          <mike>
-            this will disappear.  the 'mike' element doesn't have a transclude
-          </mike>
+          <img ng-show="user.loading" ng-src="img/ajax-loader-kitscanner2.gif">
 
-          Choose:
+          <div ng-show="!user">
+            You need to login.
+            <br>
+            <input ng-model="userlogin.username">
+            <br>
+            <input type="passwword" ng-model="userlogin.password">
+            <br>
+            <button ng-click="login(userlogin)">LOGIN</button>
+            <br> {{loginMessage}}
+          </div>
 
-          <a ui-sref="index" ui-sref-active='active'>Index</a>
-          <a ui-sref="books" ui-sref-active='active'>Books</a>
+          <div ng-hide="user.loading || !user">
 
-          <div ui-view></div>
+              <mike>
+                this will disappear.  the 'mike' element doesn't have a transclude
+              </mike>
+
+              <br>
+
+              Choose:
+
+              <a ui-sref="index" ui-sref-active='active'>Index</a>
+              <a ui-sref="books" ui-sref-active='active'>Books</a>
+              <a href="#" ng-click="logout()"> logout </a>
+
+              <div ui-view></div>
+
+              </div>
 
 
       </div>
