@@ -43,6 +43,8 @@
 
               <br>
 
+              You will be logged out in {{timeLeft}}
+
               Choose:
 
               <a ui-sref="index" ui-sref-active='active'>Index</a>

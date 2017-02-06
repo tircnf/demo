@@ -24,7 +24,7 @@ module.exports = {
 
 
     // how long our sessions last.
-    var TIMEOUT=1;
+    var TIMEOUT=5;
 
     // some initial static content.
 

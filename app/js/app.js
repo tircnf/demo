@@ -3,7 +3,7 @@ var app=angular.module("app", ['ui.router']);
 
 
 
-app.controller("ctrl", function($scope,$http, $rootScope, $state) {
+app.controller("ctrl", function($scope,$http, $rootScope, $state, $interval) {
 
 
     // catch the stateChangeStart.. if we don't have a user yet, and we are not on the index page,
@@ -20,6 +20,13 @@ app.controller("ctrl", function($scope,$http, $rootScope, $state) {
         }
     });
 
+    $interval(function() {
+        if ($scope.user && $scope.user.logOutTime) {
+            var d=new Date();
+            $scope.timeLeft=($scope.user.logOutTime-d)/1000;
+        }
+    },1000);
+
 
     // when the app first starts, fire off a "whoami" request.
     // if we have a cookie, then we can get our user info back.
@@ -34,6 +41,12 @@ app.controller("ctrl", function($scope,$http, $rootScope, $state) {
         if (response.data) {
             $scope.user.loading=false;
             angular.extend($scope.user, response.data);
+
+            console.log("Logged in user = ",$scope.user);
+
+            var d=new Date();
+            d.setMinutes(d.getMinutes()+$scope.user.timeout);
+            $scope.user.logOutTime=d;
 
             if ($scope.afterLoginState) {
                 console.log("Restoring previous state ",$scope.afterLoginState);
@@ -63,6 +76,10 @@ app.controller("ctrl", function($scope,$http, $rootScope, $state) {
                 $scope.user=response.data;
                 user.username="";
                 user.password="";
+
+                var d=new Date();
+                d.setMinutes(d.getMinutes()+$scope.user.timeout);
+                $scope.user.logOutTime=d;
 
                 if ($scope.afterLoginState) {
                     console.log("Restoring previous state ",$scope.afterLoginState);
