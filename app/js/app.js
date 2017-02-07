@@ -2,15 +2,27 @@
 var app=angular.module("app", ['ui.router']);
 
 
+app.filter('seconds', function($filter) {
+    return function(seconds) {
+        return $filter('date')(new Date(0,0,0).setSeconds(seconds),'mm:ss');
+    };
+});
 
-app.controller("ctrl", function($scope,$http, $rootScope, $state, $interval) {
 
+app.controller("ctrl", function($scope,User, $rootScope, $state, $interval) {
+
+
+    $scope.User=User;
+    $scope.user=User.user;
+
+
+    $rootScope.$on("$stateChangeStart", function(event, toState, toParams, fromState, fromParams) {
     // catch the stateChangeStart.. if we don't have a user yet, and we are not on the index page,
     // store the desired location on scope, and redirect back to index.
     // without a user, the index page shows "login".
+    // Might be better to just have a "login" state. hmm.
 
-    $rootScope.$on("$stateChangeStart", function(event, toState, toParams, fromState, fromParams) {
-        if ((!$scope.user || $scope.user.loading) && toState !== $state.get("index")) {
+        if ((!User.user.valid) && toState !== $state.get("index")) {
             console.log("stopping transition to " + toState.name);
             event.preventDefault();
             $scope.afterLoginState=toState;
@@ -20,82 +32,46 @@ app.controller("ctrl", function($scope,$http, $rootScope, $state, $interval) {
         }
     });
 
+    // update the remaining time every second.
+    // shows time in minutes.
     $interval(function() {
-        if ($scope.user && $scope.user.logOutTime) {
-            var d=new Date();
-            $scope.timeLeft=($scope.user.logOutTime-d)/1000;
-        }
+        $scope.timeLeft=User.timeLeft();
     },1000);
 
-
-    // when the app first starts, fire off a "whoami" request.
-    // if we have a cookie, then we can get our user info back.
-    // lots of crap in here for handling the first load.
-    // if someone refreshes the browser, and is nested in our app,
-    // we have to resolve our user first... might be the real case for
-    // the resolve block.
-    // if we have a "afterLoginState" variable, navigate to there after
-    // the user loads.
-    $scope.user=$http.get("/api/whoami").then(function(response) {
-        console.log("Got a response.. ",response.data);
-        if (response.data) {
-            $scope.user.loading=false;
-            angular.extend($scope.user, response.data);
-
-            console.log("Logged in user = ",$scope.user);
-
-            var d=new Date();
-            d.setMinutes(d.getMinutes()+$scope.user.timeout);
-            $scope.user.logOutTime=d;
-
-            if ($scope.afterLoginState) {
-                console.log("Restoring previous state ",$scope.afterLoginState);
-                $state.go($scope.afterLoginState, $scope.afterLoginParams);
-                $scope.afterLoginState=undefined;
-                $scope.afterLoginParams=undefined;
-            }
-        } else {
-            $scope.user=false;
+    // if we stuffed a state in $scope.afterLoginState, redirect to it.
+    // if somoene pastes /books/4 into the url bar and isn't logged in
+    // they get redirected to index but books/4 is stored in afterLoginState.
+    // after they log in, take them there.
+    function restoreSavedState() {
+        if (User.user.valid && $scope.afterLoginState) {
+            console.log("Restoring previous state ",$scope.afterLoginState);
+            $state.go($scope.afterLoginState, $scope.afterLoginParams);
+            $scope.afterLoginState=undefined;
+            $scope.afterLoginParams=undefined;
         }
+    }
+
+    // this promise resolves after "whoami" finishes.
+    User.promise.then(function() {
+        restoreSavedState();
     });
 
-    $scope.user.loading=true;
 
     $scope.logout=function() {
-        $http.post("/api/logout").then(function(response) {
-            $scope.user=false;
+        // maybe this should be finally, so we always reload
+        User.logout().then(function() {
             $state.go("index").then(function() {
                 location.reload();
             });
-         });
+        });
     };
 
     $scope.login=function(user) {
-        $scope.loginMessage="";
-        $http.post("/api/login",user).then(function(response) {
-            console.log("response.data for login = ",response.data);
-            if (response.data) {
-                $scope.user=response.data;
-                user.username="";
-                user.password="";
-
-                var d=new Date();
-                d.setMinutes(d.getMinutes()+$scope.user.timeout);
-                $scope.user.logOutTime=d;
-
-                if ($scope.afterLoginState) {
-                    console.log("Restoring previous state ",$scope.afterLoginState);
-                    $state.go($scope.afterLoginState, $scope.afterLoginParams);
-                    $scope.afterLoginState=undefined;
-                    $scope.afterLoginParams=undefined;
-                }
-            } else {
-                $scope.loginMessage="login denied";
-            }
-        }, function(response) {
-
+        User.login(user).then(function(value) {
+            restoreSavedState();
         });
     };
+
 
 });
 

@@ -117,21 +117,22 @@ module.exports = {
     });
 
     app.post('/api/login', function(req, res) {
+        setTimeout(function() {
+            var user=false;
+            var testUser=_userlist[req.body.username];
 
-        var user=false;
+            if (testUser && testUser.password===req.body.password) {
+                var cookie=new Date().getTime();
+                user=testUser;
 
-        var testUser=_userlist[req.body.username];
+                user.cookie=cookie;
+                user.timeout=TIMEOUT;
+                res.cookie(MYSESSIONID,user.cookie);
+                touchUser(user);
+            }
 
-        if (testUser && testUser.password===req.body.password) {
-            var cookie=new Date().getTime();
-            user=testUser;
-
-            user.cookie=cookie;
-            user.timeout=TIMEOUT;
-            res.cookie(MYSESSIONID,user.cookie);
-            touchUser(user);
-        }
-        res.json(user);
+            res.json(user);
+        }, 750);
     });
 
     app.post('/api/logout', function(req, res) {

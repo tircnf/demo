@@ -24,7 +24,7 @@
 
           <img ng-show="user.loading" ng-src="img/ajax-loader-kitscanner2.gif">
 
-          <div ng-show="!user">
+          <div ng-show="!user.valid && !user.loading">
             You need to login.
             <br>
             <input ng-model="userlogin.username">
@@ -32,10 +32,10 @@
             <input type="passwword" ng-model="userlogin.password">
             <br>
             <button ng-click="login(userlogin)">LOGIN</button>
-            <br> {{loginMessage}}
+            <br> {{userlogin.loginMessage}}
           </div>
 
-          <div ng-hide="user.loading || !user">
+          <div ng-hide="user.loading || !user.valid">
 
               <mike>
                 this will disappear.  the 'mike' element doesn't have a transclude
@@ -43,7 +43,7 @@
 
               <br>
 
-              You will be logged out in {{timeLeft}}
+              Welcome {{user.username}}.  You will be logged out in {{timeLeft | seconds}}
 
               Choose:
 
