@@ -1,5 +1,5 @@
 
-app.service('BookService', function($http) {
+app.service('BookService', function($http, User) {
 
     var service={};
 
@@ -16,6 +16,7 @@ app.service('BookService', function($http) {
             return bookList;
         }
 
+        User.touchUser();
         var promise=$http.get("/api/books").then(function(response)  {
             // response has {data:.., status:<number>, headers: <function(headerName)>, config: <object>, statusText: http status text}
             angular.extend(bookList, response.data);
@@ -50,6 +51,7 @@ app.service('BookService', function($http) {
 
         var book={id:id};
 
+        User.touchUser();
         var promise=$http.get("/api/books/"+id).then(function(response) {
             angular.extend(book, response.data);
             book.loading=false;

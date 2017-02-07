@@ -19,18 +19,19 @@ app.service('User', function($http) {
 
     // set the logged_in_user to the results of
     // a successful login request or whoami request.
-
+    //
     var setUser=function(userData) {
         clearUser();
         logged_in_user.loading=false;
         angular.extend(logged_in_user, userData);
+        logged_in_user.valid=true;
+        touchUser();
+    };
 
+    var touchUser=function() {
         var d=new Date();
         d.setMinutes(d.getMinutes()+logged_in_user.timeout);
         logged_in_user.logOutTime=d;
-
-        logged_in_user.valid=true;
-
     };
 
 
@@ -107,6 +108,7 @@ app.service('User', function($http) {
     service.logout=logout;
     service.user=logged_in_user;
     service.timeLeft=timeLeft;
+    service.touchUser=touchUser;
 
 
     return service;
