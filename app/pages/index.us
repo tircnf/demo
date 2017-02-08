@@ -14,6 +14,23 @@
     background-color: green;
 }
 
+
+/*
+    Just a light yellow background for invalid field elements.
+*/
+
+input.ng-invalid {
+    background-color: lightyellow;
+}
+
+
+/*
+    gray out disabled inputs
+    specifically, the user/password fields.
+*/
+input:disabled {
+    background-color: lightgrey;
+}
 </style>
 
 
@@ -27,10 +44,11 @@
             <form >
                  <fieldset ng-disabled="user.loading">
                      <legend> LOGIN </legend>
+                 <img style="float:right;padding-right:100px;" ng-show="user.loading" ng-src="img/ajax-loader-pacman3.gif">
                  <br>
-                 <input placeholder="username" ng-model="userlogin.username"> <em>Try 'user'</em>
+                 <input placeholder="username" required ng-model="userlogin.username"> <em>Try 'user'</em>
                  <br>
-                 <input placeholder="password" type="password" ng-model="userlogin.password"> <em>Try 'password'</em>
+                 <input placeholder="password" required type="password" ng-model="userlogin.password"> <em>Try 'password'</em>
                  <br>
                  <input type="submit" value="LOGIN" ng-click="login(userlogin)"/>
                  <br> {{userlogin.loginMessage}}
@@ -38,7 +56,6 @@
             <form>
           </div>
 
-          <img ng-show="user.loading" ng-src="img/ajax-loader-pacman3.gif">
 
           <div ng-hide="user.loading || !user.valid">
 
