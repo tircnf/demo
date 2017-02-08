@@ -22,14 +22,14 @@
 
       <div ng-app="app" ng-controller="ctrl" ng-cloak>
 
-          <img ng-show="user.loading" ng-src="img/ajax-loader-kitscanner2.gif">
+          <img ng-show="user.loading" ng-src="img/ajax-loader-pacman3.gif">
 
           <div ng-show="!user.valid && !user.loading">
             You need to login.
             <br>
             <input ng-model="userlogin.username">
             <br>
-            <input type="passwword" ng-model="userlogin.password">
+            <input type="password" ng-model="userlogin.password">
             <br>
             <button ng-click="login(userlogin)">LOGIN</button>
             <br> {{userlogin.loginMessage}}
@@ -37,9 +37,11 @@
 
           <div ng-hide="user.loading || !user.valid">
 
+              <!--
               <mike>
                 this will disappear.  the 'mike' element doesn't have a transclude
               </mike>
+              -->
 
               <br>
 

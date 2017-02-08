@@ -68,6 +68,7 @@ app.controller("ctrl", function($scope,User, $rootScope, $state, $interval) {
 
     $scope.login=function(user) {
         User.login(user).then(function(value) {
+            user.password="";
             restoreSavedState();
         });
     };

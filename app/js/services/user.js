@@ -17,6 +17,12 @@ app.service('User', function($http) {
         logged_in_user.valid=false;
     };
 
+    var touchUser=function() {
+        var d=new Date();
+        d.setMinutes(d.getMinutes()+logged_in_user.timeout);
+        logged_in_user.logOutTime=d;
+    };
+
     // set the logged_in_user to the results of
     // a successful login request or whoami request.
     //
@@ -26,12 +32,6 @@ app.service('User', function($http) {
         angular.extend(logged_in_user, userData);
         logged_in_user.valid=true;
         touchUser();
-    };
-
-    var touchUser=function() {
-        var d=new Date();
-        d.setMinutes(d.getMinutes()+logged_in_user.timeout);
-        logged_in_user.logOutTime=d;
     };
 
 
@@ -83,6 +83,7 @@ app.service('User', function($http) {
             if (response.data) {
                 setUser(response.data);
             } else {
+                clearUser();
                 user.loginMessage="login denied. Bad username/password";
             }
         }, function(response) {
