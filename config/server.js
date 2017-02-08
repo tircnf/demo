@@ -45,6 +45,7 @@ module.exports = {
     var _userlist= {};
     _userlist.mike={username: "mike", password: "mike", cookie: "", expires: new Date()};
     _userlist.luke={username: "luke", password: "luke", cookie: "", expires: new Date()};
+    _userlist.user={username: "user", password: "password", cookie: "", expires: new Date()};
 
     var MYSESSIONID="MYSESSIONID";
 

@@ -22,18 +22,23 @@
 
       <div ng-app="app" ng-controller="ctrl" ng-cloak>
 
-          <img ng-show="user.loading" ng-src="img/ajax-loader-pacman3.gif">
 
-          <div ng-show="!user.valid && !user.loading">
-            You need to login.
-            <br>
-            <input ng-model="userlogin.username">
-            <br>
-            <input type="password" ng-model="userlogin.password">
-            <br>
-            <button ng-click="login(userlogin)">LOGIN</button>
-            <br> {{userlogin.loginMessage}}
+          <div ng-show="!user.valid">
+            <form >
+                 <fieldset ng-disabled="user.loading">
+                     <legend> LOGIN </legend>
+                 <br>
+                 <input placeholder="username" ng-model="userlogin.username"> <em>Try 'user'</em>
+                 <br>
+                 <input placeholder="password" type="password" ng-model="userlogin.password"> <em>Try 'password'</em>
+                 <br>
+                 <input type="submit" value="LOGIN" ng-click="login(userlogin)"/>
+                 <br> {{userlogin.loginMessage}}
+                </fieldset>
+            <form>
           </div>
+
+          <img ng-show="user.loading" ng-src="img/ajax-loader-pacman3.gif">
 
           <div ng-hide="user.loading || !user.valid">
 
