@@ -87,7 +87,9 @@ app.service('User', function($http) {
                 user.loginMessage="login denied. Bad username/password";
             }
         }, function(response) {
-
+            clearUser();
+            console.log ("response object = ",response);
+            user.loginMessage="Error communicationg with server. ";
         });
 
         return promise;
