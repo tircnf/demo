@@ -55,14 +55,21 @@ module.exports = function(lineman) {
     //
       livereload: true,
 
-      loadNpmTasks: lineman.config.application.loadNpmTasks.concat("grunt-bowercopy"),
+      loadNpmTasks: lineman.config.application.loadNpmTasks.concat("grunt-bowercopy","grunt-asciify"),
 
       prependTasks: {
-        common: lineman.config.application.prependTasks.common.concat("bowercopy")
+          common: lineman.config.application.prependTasks.common.concat("bowercopy","banner:Preparing DEMO:doom")
       },
 
       removeTasks: {
             common: lineman.config.application.removeTasks.common.concat("coffee")
+      },
+
+      asciify: {
+        foo: {
+            text: "Getting started",
+            options: {log:true, font: "doom"}
+        }
       },
 
 

@@ -15,5 +15,8 @@
     "start": "lineman run",
     "test": "lineman spec-ci",
     "production": "lineman clean build && npm i express@3 && node -e \"var e = require('express'), a = e(); a.use(e.static('dist/')); a.listen(process.env.PORT)\""
+  },
+  "dependencies": {
+    "grunt-asciify": "^0.2.2"
   }
 }
