@@ -55,10 +55,10 @@ module.exports = function(lineman) {
     //
       livereload: true,
 
-      loadNpmTasks: lineman.config.application.loadNpmTasks.concat("grunt-bowercopy","grunt-asciify"),
+      loadNpmTasks: lineman.config.application.loadNpmTasks.concat("grunt-bowercopy","grunt-asciify","grunt-open"),
 
       prependTasks: {
-          common: lineman.config.application.prependTasks.common.concat("bowercopy","banner:Preparing DEMO:doom")
+          common: lineman.config.application.prependTasks.common.concat("bowercopy","banner:Preparing DEMO:doom","open:dev")
       },
 
       removeTasks: {
@@ -72,6 +72,12 @@ module.exports = function(lineman) {
         }
       },
 
+      open: {
+        dev : {
+            path: 'http://localhost:8000/',
+            //app: 'Google Chrome'
+        }
+      },
 
       bowercopy: {
         options: {

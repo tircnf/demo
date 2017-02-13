@@ -8,6 +8,7 @@
     "body-parser": "^1.16.0",
     "cookie-parser": "^1.4.3",
     "grunt-bowercopy": "^1.0.0",
+    "grunt-open": "^0.2.3",
     "lineman": "~0.37.0",
     "lineman-angular": "^0.3.0"
   },
