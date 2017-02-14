@@ -39,12 +39,11 @@ input:disabled {
 
       <div ng-app="app" ng-controller="ctrl" ng-cloak>
 
-
           <div ng-show="!user.valid">
             <form >
                  <fieldset ng-disabled="user.loading">
                      <legend> LOGIN </legend>
-                 <img style="float:right;padding-right:100px;" ng-show="user.loading" ng-src="img/ajax-loader-pacman3.gif">
+                 <img style="float:right;padding-right:100px;" ng-show="user.loading" ng-src="img/ajax-loader-pacman3-slower.gif">
                  <br>
                  <input placeholder="username" required ng-model="userlogin.username"> <em>Try 'user'</em>
                  <br>
@@ -68,6 +67,7 @@ input:disabled {
               <br>
 
               Welcome {{user.username}}.  You will be logged out in {{timeLeft | seconds}}
+
 
               Choose:
 

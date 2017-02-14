@@ -1,0 +1,7 @@
+<div ng-show="mbLoader.loading">
+    <img ng-src="{{imageUrl}}" alt="Busy...">
+</div>
+
+<div ng-hide="mbLoader.loading">
+    <div ng-transclude></div>
+</div>

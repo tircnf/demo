@@ -3,7 +3,8 @@
 
     <div>{{books.error}}</div>
     <ul style="min-height:200px">
-        <li ng-show="books.loading"> Loading...  <img src="img/ajax-loader-bar.gif" alt="Busy...">
+        <li ng-show="books.loading"> Loading...
+        <img src="img/ajax-loader-pacman3-slower.gif" alt="Busy...">
         <li ng-repeat='book in books | filter:q'> <a ng-click="clearSearch()" ui-sref='.book({bookId:book.id})' ui-sref-active="active"> {{book.title}} </a>  </li>
     </ul>
 </h3> 

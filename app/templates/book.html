@@ -1,14 +1,6 @@
 
-<div ng-show="book.loading">
-    <img src="img/ajax-loader-pacman3.gif" alt="Busy...">
-    <!-- <img src="img/ajax-loader-hasselhoff.gif" alt="Busy..."> -->
-    <img src="img/ajax-loader-spinner-large.gif" alt="Busy...">
-</div>
 
-
-<div ng-hide="book.loading">
-
-
+<div mb-loader="book" mb-image="pacman3-slower">
     <div id="container">
         <div  style="display: inline-block; vertical-align: top">
             <div>
@@ -22,5 +14,6 @@
             <img style="height:300px" ng-show="book.cover" ng-src="{{book.cover}}">
         </div>
     </div>
-<div>
+
+</div>
 
