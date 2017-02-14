@@ -15,6 +15,12 @@ app.controller("ctrl", function($scope,User, $rootScope, $state, $interval) {
     $scope.User=User;
     $scope.user=User.user;
 
+    $scope.containerType="container";
+
+    $scope.flipType=function() {
+        $scope.containerType=$scope.containerType==="container"?"container-fluid":"container";
+    };
+
 
     $rootScope.$on("$stateChangeStart", function(event, toState, toParams, fromState, fromParams) {
     // catch the stateChangeStart.. if we don't have a user yet, and we are not on the index page,

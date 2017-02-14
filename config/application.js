@@ -100,6 +100,17 @@ module.exports = function(lineman) {
             files: {
                 "angular-mocks.js": "angular-mocks/angular-mocks.js"
             }
+        },
+        bootstrap: {
+            options: {
+                destPrefix: ""
+            },
+            files: {
+                "vendor/css/bower_components/bootstrap/bootstrap.css": "bootstrap/dist/css/bootstrap.css",
+                "vendor/css/bower_components/bootstrap/bootstrap.css.map": "bootstrap/dist/css/bootstrap.css.map",
+                "vendor/css/bower_components/bootstrap/less": "bootstrap/less",
+                "vendor/fonts/bower_components/bootstrap": "bootstrap/dist/fonts/*"
+            }
         }
 
       }

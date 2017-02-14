@@ -11,7 +11,7 @@
 */
 
 .active {
-    background-color: green;
+    background-color: lightgreen;
 }
 
 
@@ -37,7 +37,9 @@ input:disabled {
   </head>
   <body>
 
-      <div ng-app="app" ng-controller="ctrl" ng-cloak>
+      <div ng-class="containerType" ng-app="app" ng-controller="ctrl" ng-cloak>
+
+          <center>Current ContainerType = {{containerType}}.  <button ng-click="flipType()">Toggle </button></center>
 
           <div ng-show="!user.valid">
             <form >
@@ -66,18 +68,20 @@ input:disabled {
 
               <br>
 
-              Welcome {{user.username}}.  You will be logged out in {{timeLeft | seconds}}
+            Welcome {{user.username}}.  You will be logged out in {{timeLeft | seconds}}
 
 
-              Choose:
+            <nav class="navbar">
+                <div class="navbar-nav">
+                    <a class="nav-item nav-link" ui-sref="index" ui-sref-active='active'>Index</a>
+                    <a class="nav-item nav-link" ui-sref="books" ui-sref-active='active'>Books</a>
+                    <a class="nav-item nav-link" href="#" ng-click="logout()"> logout </a>
+                </div>
+            </nav>
+            <br>
+            <div ui-view></div>
 
-              <a ui-sref="index" ui-sref-active='active'>Index</a>
-              <a ui-sref="books" ui-sref-active='active'>Books</a>
-              <a href="#" ng-click="logout()"> logout </a>
-
-              <div ui-view></div>
-
-              </div>
+            </div>
 
 
       </div>
