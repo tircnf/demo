@@ -1,11 +1,13 @@
 
 // a service for logging in a user.
 
-app.service('User', function($http) {
+app.service('User', function($http,$cookies) {
 
     var service={};
 
     var logged_in_user={valid:false};
+
+    var timeoutCookieName="";
 
     // remove all properties from the user object.
     var clearUser=function() {
@@ -20,7 +22,24 @@ app.service('User', function($http) {
     var touchUser=function() {
         var d=new Date();
         d.setMinutes(d.getMinutes()+logged_in_user.timeout);
-        logged_in_user.logOutTime=d;
+        // store the logouttime in a cookie.  have that cookie expire 10 seconds after the session should expire
+        // so it doesn't hang around forever.
+        $cookies.putObject(timeoutCookieName,d, {expires: d+10});
+    };
+
+    // hit the server with a ping. let the server know
+    // this user is still active.
+    var touchSession=function() {
+        if (!logged_in_user.valid) {
+            return;
+        }
+
+        $http.post("/api/touch").then(function(response) {
+            // what should touch return??
+            touchUser();
+        }, function(errorResponse) {
+            console.log("api/touch returned an error:  ",errorResponse);
+        });
     };
 
     // set the logged_in_user to the results of
@@ -31,6 +50,7 @@ app.service('User', function($http) {
         logged_in_user.loading=false;
         angular.extend(logged_in_user, userData);
         logged_in_user.valid=true;
+        timeoutCookieName=logged_in_user.username+"-logoutTime";
         touchUser();
     };
 
@@ -95,10 +115,12 @@ app.service('User', function($http) {
         return promise;
     };
 
+    // returns time left in seconds.
     var timeLeft=function() {
         if (logged_in_user.valid) {
             var d=new Date();
-            return Math.floor((logged_in_user.logOutTime-d)/1000);
+            var logoutTime=new Date($cookies.getObject(timeoutCookieName));
+            return Math.floor((logoutTime-d)/1000);
         } else {
             return 0;
         }
@@ -112,6 +134,7 @@ app.service('User', function($http) {
     service.user=logged_in_user;
     service.timeLeft=timeLeft;
     service.touchUser=touchUser;
+    service.touchSession=touchSession;
 
 
     return service;

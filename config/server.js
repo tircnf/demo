@@ -24,7 +24,7 @@ module.exports = {
 
 
     // how long our sessions last.
-    var TIMEOUT=5;
+    var TIMEOUT=3;
 
     // some initial static content.
 
@@ -161,6 +161,14 @@ module.exports = {
             res.json(_bookList);
         }, 1500);
     });
+
+    // allow users to post to /api/touch to reset the timer.
+    app.post('/api/touch', checkUser, function(req, res) {
+        setTimeout(function() {
+            res.json({code:'ok.  you have been touched.'});
+        }, 100);
+    });
+
 
 
     app.get('/api/books/:id', checkUser, function(req, res) {

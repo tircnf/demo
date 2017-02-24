@@ -1,5 +1,5 @@
 
-var app=angular.module("app", ['ui.router']);
+var app=angular.module("app", ['ui.router','ngCookies']);
 
 
 app.filter('seconds', function($filter) {
@@ -34,7 +34,11 @@ app.controller("ctrl", function($scope,User, $rootScope, $state, $interval) {
             $scope.afterLoginState=toState;
             $scope.afterLoginParams=toParams;
             $state.go("index");
+        }
 
+        if (User.user.valid && toState !== $state.get("logout")) {
+            console.log("Touching session because of UI interaction");
+            User.touchSession();
         }
     });
 
@@ -42,6 +46,17 @@ app.controller("ctrl", function($scope,User, $rootScope, $state, $interval) {
     // shows time in minutes.
     $interval(function() {
         $scope.timeLeft=User.timeLeft();
+
+        // trying to log the user out when timeLeft goes to zero.
+        // mostly working.
+        // but if two different users are logged in...
+        // Have to rethink having two users logged in at the same time
+        // in different browser tabs.
+
+        if (User.user.valid && $scope.timeLeft<=1) {
+            console.log("logging user out..");
+            $scope.logout();
+        }
     },1000);
 
     // if we stuffed a state in $scope.afterLoginState, redirect to it.

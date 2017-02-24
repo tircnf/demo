@@ -90,7 +90,8 @@ module.exports = function(lineman) {
             // same with destination... will be put under vendor
             files: {
                 "js/angular.js": "angular/angular.js",
-                "js/angular-ui-router.js": "angular-ui-router/release/angular-ui-router.js"
+                "js/angular-ui-router.js": "angular-ui-router/release/angular-ui-router.js",
+                "js/angular-cookies.js": "angular-cookies/angular-cookies.js"
             }
         },
         ngMock: {
